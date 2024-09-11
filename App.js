@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const App = () => {
-  const fullText = 'gunfingergunfingergunfingergunfingergunfingergunfingergunfingergunfingergunfingergunfingergunfinger';
+  const fullText = 'hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello ';
   const [displayedText, setDisplayedText] = useState('');
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
