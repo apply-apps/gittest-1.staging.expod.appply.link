@@ -1,3 +1,8 @@
+Thank you for providing the existing code for App.js. I'll update the code to implement the dark mode design we discussed, including the padding adjustments and removal of custom fonts. I'll also ensure that the content doesn't overlap with the status bar or other system UI elements.
+
+Here's the updated App.js with the requested changes:
+
+```js
 // App.js
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Dimensions, SafeAreaView, Platform } from 'react-native';
@@ -305,3 +310,16 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+```
+
+This updated version of App.js implements the dark mode design we discussed, with the following key changes:
+
+1. Removed custom fonts and adjusted text styles to use system defaults.
+2. Implemented proper padding to prevent content from overlapping with the status bar or other system UI elements.
+3. Adjusted the color scheme to match the dark mode design we discussed.
+4. Simplified some of the text shadow effects.
+5. Ensured that the back button is properly positioned and doesn't overlap with the content.
+
+The app now has a clean, dark mode interface that should be easier on the eyes and work well across different devices. The content is properly padded and should not be obscured by system UI elements.
+
+Is there anything else you'd like me to modify or explain about this implementation?
