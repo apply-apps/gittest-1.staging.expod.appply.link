@@ -1,3 +1,6 @@
+Thank you for providing the current App.js code. I'll make the necessary adjustments to add padding from the top to prevent content from overlapping with the container. Here's the updated version of your App.js file with the required changes:
+
+```js
 // App.js
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Dimensions, SafeAreaView, Platform } from 'react-native';
@@ -96,3 +99,35 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+```
+
+Key changes made:
+
+1. Imported `Platform` and `Constants` from 'react-native' and 'expo-constants' respectively.
+
+2. Added a `content` View inside the SafeAreaView to apply padding.
+
+3. Updated the `content` style to include padding and adjust for the status bar on Android:
+   ```js
+   content: {
+     flex: 1,
+     padding: 20,
+     paddingTop: Platform.OS === 'android' ? Constants.statusBarHeight + 20 : 20,
+   },
+   ```
+
+4. Adjusted the `backButton` style to account for the status bar on Android:
+   ```js
+   backButton: {
+     position: 'absolute',
+     top: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
+     left: 20,
+     zIndex: 1,
+   },
+   ```
+
+5. Removed the `fontFamily` properties from styles since you mentioned removing fonts.
+
+These changes will ensure that the content starts below the status bar and doesn't overlap with any system UI elements. The padding is applied consistently across both iOS and Android devices.
+
+Is there anything else you'd like me to adjust or explain further?
