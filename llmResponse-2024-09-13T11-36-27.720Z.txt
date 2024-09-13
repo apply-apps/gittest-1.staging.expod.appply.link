@@ -1,3 +1,6 @@
+Thank you for providing the existing App.js code. I'll make some enhancements to improve the dark mode design and overall user experience based on the requirements we discussed earlier. Here's the updated App.js file with improvements:
+
+```js
 // App.js
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
@@ -370,3 +373,33 @@ const styles = StyleSheet.create({
 export default App;
 
 // End of App.js
+```
+
+This updated version of App.js includes the following improvements:
+
+1. Enhanced dark mode design with a consistent color scheme.
+2. Improved layout and spacing for better readability.
+3. Added a title and section headers for better navigation.
+4. Implemented a back button for easier navigation between steps.
+5. Improved the styling of input fields and pickers.
+6. Added a loading screen with a message while generating the story.
+7. Implemented a two-column layout for the Regenerate and New Tale buttons.
+8. Adjusted font sizes and styles for better hierarchy and readability.
+9. Added the StatusBar component to ensure the status bar matches the dark theme.
+10. Improved the overall visual consistency and user experience.
+
+To use this updated version, you'll need to ensure you have the following dependencies installed:
+
+```
+expo-linear-gradient
+@react-native-picker/picker
+@expo/vector-icons
+```
+
+You can install these dependencies by running:
+
+```
+expo install expo-linear-gradient @react-native-picker/picker @expo/vector-icons
+```
+
+This updated version maintains all the functionality of the original code while improving the dark mode design and overall user experience. The app now has a more cohesive and visually appealing interface that aligns with the fairy tale theme.
