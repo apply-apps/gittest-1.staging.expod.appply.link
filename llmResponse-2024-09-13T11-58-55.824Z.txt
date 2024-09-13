@@ -1,0 +1,425 @@
+Thank you for providing the existing App.js code. I'll make the necessary modifications to implement the dark mode design we discussed earlier. Here's the updated App.js file with the dark mode design implemented:
+
+```js
+// App.js
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Dimensions, SafeAreaView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
+import * as Font from 'expo-font';
+
+const API_URL = 'http://apihub.p.appply.xyz:3300/chatgpt';
+const { width } = Dimensions.get('window');
+
+const App = () => {
+  const [fontLoaded, setFontLoaded] = useState(false);
+  const [step, setStep] = useState('start');
+  const [characters, setCharacters] = useState([
+    { name: '', role: 'Hero', trait: '' },
+    { name: '', role: 'Villain', trait: '' },
+    { name: '', role: 'Sidekick', trait: '' },
+  ]);
+  const [setting, setSetting] = useState('Enchanted Forest');
+  const [timePeriod, setTimePeriod] = useState('Once Upon a Time');
+  const [storyType, setStoryType] = useState('Adventure');
+  const [storyLength, setStoryLength] = useState('Medium');
+  const [magicalObject, setMagicalObject] = useState('');
+  const [theme, setTheme] = useState('');
+  const [generatedStory, setGeneratedStory] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [textIndex, setTextIndex] = useState(0);
+
+  useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync({
+        'FairyTale': require('./assets/fonts/MedievalSharp-Regular.ttf'),
+        'Roboto': require('./assets/fonts/Roboto-Regular.ttf'),
+      });
+      setFontLoaded(true);
+    }
+    loadFonts();
+  }, []);
+
+  useEffect(() => {
+    if (generatedStory && textIndex < generatedStory.length) {
+      const interval = setInterval(() => {
+        setDisplayedText((prev) => prev + generatedStory[textIndex]);
+        setTextIndex((prev) => prev + 1);
+      }, 50);
+
+      return () => clearInterval(interval);
+    }
+  }, [generatedStory, textIndex]);
+
+  const generateStory = async () => {
+    setIsLoading(true);
+    const prompt = `Write a ${storyLength.toLowerCase()} ${storyType.toLowerCase()} fairy tale set in a ${setting} during ${timePeriod}. The main characters are ${characters.map(c => `${c.name} (${c.role}, ${c.trait})`).join(', ')}. Include a ${magicalObject} as a key element. The story should convey the theme: "${theme}".`;
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [
+            { role: "system", content: "You are a fairy tale writer. Write engaging and family-friendly stories." },
+            { role: "user", content: prompt }
+          ],
+          model: "gpt-4o"
+        }),
+      });
+
+      const data = await response.json();
+      setGeneratedStory(data.response.trim());
+      setDisplayedText('');
+      setTextIndex(0);
+      setStep('story');
+    } catch (error) {
+      console.error('Error:', error);
+      setGeneratedStory('Once upon a time, there was an error in the magical realm of API calls...');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderStart = () => (
+    <View style={styles.startContainer}>
+      <Text style={styles.title}>Fairy Tale Creator</Text>
+      <TouchableOpacity style={styles.startButton} onPress={() => setStep('characters')}>
+        <Text style={styles.buttonText}>Create New Tale</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderCharacterInput = () => (
+    <ScrollView style={styles.scrollView}>
+      <Text style={styles.sectionTitle}>Create Your Characters</Text>
+      {characters.map((character, index) => (
+        <View key={index} style={styles.inputGroup}>
+          <TextInput
+            style={styles.input}
+            placeholder={`Character ${index + 1} Name`}
+            placeholderTextColor="#B0B0B0"
+            value={character.name}
+            onChangeText={(text) => {
+              const newCharacters = [...characters];
+              newCharacters[index].name = text;
+              setCharacters(newCharacters);
+            }}
+          />
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={character.role}
+              style={styles.picker}
+              onValueChange={(itemValue) => {
+                const newCharacters = [...characters];
+                newCharacters[index].role = itemValue;
+                setCharacters(newCharacters);
+              }}
+            >
+              <Picker.Item label="Hero" value="Hero" />
+              <Picker.Item label="Villain" value="Villain" />
+              <Picker.Item label="Sidekick" value="Sidekick" />
+              <Picker.Item label="Magical Being" value="Magical Being" />
+              <Picker.Item label="Other" value="Other" />
+            </Picker>
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Character Trait"
+            placeholderTextColor="#B0B0B0"
+            value={character.trait}
+            onChangeText={(text) => {
+              const newCharacters = [...characters];
+              newCharacters[index].trait = text;
+              setCharacters(newCharacters);
+            }}
+          />
+        </View>
+      ))}
+      <TouchableOpacity style={styles.nextButton} onPress={() => setStep('customization')}>
+        <Text style={styles.buttonText}>Next</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+
+  const renderCustomization = () => (
+    <ScrollView style={styles.scrollView}>
+      <Text style={styles.sectionTitle}>Customize Your Story</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={setting}
+          style={styles.picker}
+          onValueChange={(itemValue) => setSetting(itemValue)}
+        >
+          <Picker.Item label="Enchanted Forest" value="Enchanted Forest" />
+          <Picker.Item label="Magical Kingdom" value="Magical Kingdom" />
+          <Picker.Item label="Underwater Realm" value="Underwater Realm" />
+          <Picker.Item label="Mountain Village" value="Mountain Village" />
+          <Picker.Item label="Futuristic City" value="Futuristic City" />
+        </Picker>
+      </View>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={timePeriod}
+          style={styles.picker}
+          onValueChange={(itemValue) => setTimePeriod(itemValue)}
+        >
+          <Picker.Item label="Once Upon a Time" value="Once Upon a Time" />
+          <Picker.Item label="Medieval" value="Medieval" />
+          <Picker.Item label="Modern Day" value="Modern Day" />
+          <Picker.Item label="Far Future" value="Far Future" />
+        </Picker>
+      </View>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={storyType}
+          style={styles.picker}
+          onValueChange={(itemValue) => setStoryType(itemValue)}
+        >
+          <Picker.Item label="Adventure" value="Adventure" />
+          <Picker.Item label="Romance" value="Romance" />
+          <Picker.Item label="Mystery" value="Mystery" />
+          <Picker.Item label="Comedy" value="Comedy" />
+          <Picker.Item label="Moral Tale" value="Moral Tale" />
+        </Picker>
+      </View>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={storyLength}
+          style={styles.picker}
+          onValueChange={(itemValue) => setStoryLength(itemValue)}
+        >
+          <Picker.Item label="Short" value="Short" />
+          <Picker.Item label="Medium" value="Medium" />
+          <Picker.Item label="Long" value="Long" />
+        </Picker>
+      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Magical Object"
+        placeholderTextColor="#B0B0B0"
+        value={magicalObject}
+        onChangeText={setMagicalObject}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Story Theme or Moral"
+        placeholderTextColor="#B0B0B0"
+        value={theme}
+        onChangeText={setTheme}
+      />
+      <TouchableOpacity style={styles.generateButton} onPress={generateStory}>
+        <Text style={styles.buttonText}>Generate Story</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+
+  const renderStory = () => (
+    <ScrollView style={styles.scrollView}>
+      <Text style={styles.storyText}>{displayedText}</Text>
+      {textIndex >= generatedStory.length && (
+        <View style={styles.storyButtonsContainer}>
+          <TouchableOpacity style={styles.regenerateButton} onPress={generateStory}>
+            <Text style={styles.buttonText}>Regenerate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.newTaleButton} onPress={() => {
+            setStep('start');
+            setGeneratedStory('');
+            setDisplayedText('');
+            setTextIndex(0);
+          }}>
+            <Text style={styles.buttonText}>New Tale</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </ScrollView>
+  );
+
+  if (!fontLoaded) {
+    return <ActivityIndicator size="large" color="#FFD700" />;
+  }
+
+  return (
+    <LinearGradient
+      colors={['#1A1B2E', '#2A2B3E']}
+      style={styles.container}
+    >
+      <StatusBar style="light" />
+      <SafeAreaView style={styles.safeArea}>
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#FFD700" />
+            <Text style={styles.loadingText}>Crafting your magical tale...</Text>
+          </View>
+        ) : (
+          <>
+            {step !== 'start' && (
+              <TouchableOpacity style={styles.backButton} onPress={() => setStep(step === 'characters' ? 'start' : 'characters')}>
+                <Ionicons name="arrow-back" size={24} color="#FFD700" />
+              </TouchableOpacity>
+            )}
+            {step === 'start' && renderStart()}
+            {step === 'characters' && renderCharacterInput()}
+            {step === 'customization' && renderCustomization()}
+            {step === 'story' && renderStory()}
+          </>
+        )}
+      </SafeAreaView>
+    </LinearGradient>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  startContainer: {
+    alignItems: 'center',
+  },
+  title: {
+    fontFamily: 'FairyTale',
+    fontSize: 40,
+    color: '#FFD700',
+    marginBottom: 30,
+    textAlign: 'center',
+    textShadowColor: 'rgba(255, 215, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 10
+  },
+  sectionTitle: {
+    fontFamily: 'FairyTale',
+    fontSize: 28,
+    color: '#FFD700',
+    marginBottom: 20,
+    textAlign: 'center',
+    textShadowColor: 'rgba(255, 215, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 5
+  },
+  startButton: {
+    backgroundColor: '#8A4FFF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: width * 0.8,
+    elevation: 5,
+  },
+  nextButton: {
+    backgroundColor: '#8A4FFF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    elevation: 5,
+  },
+  generateButton: {
+    backgroundColor: '#FFD700',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    elevation: 5,
+  },
+  regenerateButton: {
+    backgroundColor: '#8A4FFF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 10,
+    elevation: 5,
+  },
+  newTaleButton: {
+    backgroundColor: '#FFD700',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    flex: 1,
+    marginLeft: 10,
+    elevation: 5,
+  },
+  buttonText: {
+    fontFamily: 'Roboto',
+    color: '#1A1B2E',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  input: {
+    backgroundColor: '#2A2B3E',
+    color: '#E0E0E0',
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 15,
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    borderColor: '#8A4FFF',
+    borderWidth: 1,
+  },
+  pickerContainer: {
+    backgroundColor: '#2A2B3E',
+    borderRadius: 5,
+    marginBottom: 15,
+    overflow: 'hidden',
+    borderColor: '#8A4FFF',
+    borderWidth: 1,
+  },
+  picker: {
+    color: '#E0E0E0',
+    height: 50,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  storyText: {
+    color: '#E0E0E0',
+    fontSize: 18,
+    lineHeight: 28,
+    fontFamily: 'Roboto',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#FFD700',
+    fontSize: 18,
+    marginTop: 20,
+    fontFamily: 'FairyTale',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
+  },
+  storyButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+});
+
+export default App;
+```
+
+This updated version of App.js implements the dark mode design we discussed earlier. The main changes include:
+
+1. Updated color scheme to match the dark mode design (deep navy blue background, soft white text, gold accents, and muted purple for interactive elements).
+2. Adjusted text colors and styles for better readability in dark mode.
+3. Modified button styles to match the new color scheme.
+4. Updated input and picker styles to fit the dark theme.
+5. Added subtle glow effects to titles using text shadows.
+
+The overall functionality of the app remains the same, but the visual appearance now matches the dark mode design we discussed. The app should now have a more immersive and eye-friendly interface, especially for use in low-light conditions.
