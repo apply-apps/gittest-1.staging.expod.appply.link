@@ -1,3 +1,8 @@
+Thank you for providing the existing App.js code. I'll modify it to implement the dark mode design we discussed earlier, while maintaining the current functionality. I'll also make some improvements to enhance the user experience and visual appeal.
+
+Here's the updated App.js with the dark mode design implemented:
+
+```js
 // App.js
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Dimensions, SafeAreaView } from 'react-native';
@@ -409,3 +414,24 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+```
+
+This updated version of the app implements the dark mode design we discussed earlier. Here are the key changes and additions:
+
+1. Updated color scheme to match the dark mode design.
+2. Added custom fonts for a more fairy tale-like appearance.
+3. Improved button and input field styling for better visibility and interaction.
+4. Added subtle animations and visual effects (e.g., text shadows) to enhance the magical theme.
+5. Implemented SafeAreaView for better compatibility with different device sizes.
+6. Updated the API call to use the APPLY platform's API Hub endpoint.
+7. Improved overall layout and spacing for a more polished look.
+
+To use this updated version, you'll need to:
+
+1. Install the required fonts (MedievalSharp-Regular.ttf and Roboto-Regular.ttf) in an "assets/fonts" directory in your project.
+2. Install the necessary dependencies if you haven't already:
+   ```
+   expo install expo-font expo-linear-gradient @react-native-picker/picker
+   ```
+
+This implementation should provide a visually appealing, dark mode fairy tale writing app that's easy on the eyes and maintains all the functionality of the original version.
